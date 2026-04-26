@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { allPosts } from '../lib/blogs.js'
 import heroVideo from '../assets/my_vid.mp4'
@@ -5,6 +6,19 @@ import heroVideo from '../assets/my_vid.mp4'
 const latestPosts = allPosts.slice(0, 3)
 
 export function HomePage() {
+  const [isMuted, setIsMuted] = useState(true)
+  const videoRef = useRef(null)
+
+  const handleToggleMute = () => {
+    setIsMuted((muted) => {
+      const nextMuted = !muted
+      if (videoRef.current) {
+        videoRef.current.muted = nextMuted
+      }
+      return nextMuted
+    })
+  }
+
   return (
     <>
       <section className="hero">
@@ -18,10 +32,18 @@ export function HomePage() {
         </p>
 
         <div className="hero-video-frame">
-          <video autoPlay loop muted playsInline controls>
+          <video ref={videoRef} autoPlay loop muted={isMuted} playsInline controls>
             <source src={heroVideo} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          <button
+            type="button"
+            className="video-audio-toggle"
+            onClick={handleToggleMute}
+            aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+          >
+            {isMuted ? 'Unmute' : 'Mute'}
+          </button>
         </div>
 
         <div className="hero-grid">

@@ -157,6 +157,31 @@ a {
   background: #000;
 }
 
+.video-audio-toggle {
+  position: absolute;
+  top: 0.62rem;
+  left: 0.62rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 248, 0.92);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  padding: 0.18rem 0.36rem;
+  cursor: pointer;
+  transition: background-color 140ms ease, transform 140ms ease;
+}
+
+.video-audio-toggle:hover {
+  background: #f3f8f5;
+  transform: translateY(-1px);
+}
+
+.video-audio-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 .hero-grid {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
