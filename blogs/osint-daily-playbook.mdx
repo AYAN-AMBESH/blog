@@ -1,0 +1,49 @@
+export const meta = {
+  title: 'OSINT Daily Playbook: 20 Minute Triage Loop',
+  date: '2026-04-25',
+  tags: ['osint', 'mdx', 'playbook'],
+  excerpt: 'A practical MDX sample post showing a repeatable OSINT triage routine and quick notes format.',
+  slug: 'osint-daily-playbook',
+  searchText: 'osint triage routine verification notes mdx sample'
+}
+
+export function Stat({ label, value }) {
+  return (
+    <div style={{ border: '1px solid #beb094', padding: '0.45rem 0.55rem', background: '#f7f2e6' }}>
+      <strong>{value}</strong>
+      <div>{label}</div>
+    </div>
+  )
+}
+
+# OSINT Daily Playbook
+
+A compact routine for gathering signal without drowning in noise.
+
+<div style={{ display: 'grid', gap: '0.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', margin: '0.75rem 0' }}>
+  <Stat label="Collection Window" value="20m" />
+  <Stat label="Sources Checked" value="6" />
+  <Stat label="Useful Leads" value="2-4" />
+</div>
+
+## Loop Template
+
+1. Define question and boundary.
+2. Collect from known trusted sources first.
+3. Verify with at least one independent source.
+4. Save evidence links and timestamps.
+5. Write one paragraph summary.
+
+> Keep every note evidence-first. Opinion comes after verification.
+
+## Reusable Notes Block
+
+```text
+Date:
+Question:
+Signals found:
+Confidence:
+Next action:
+```
+
+This post is intentionally short and structured to validate MDX rendering, search indexing, and RSS generation.

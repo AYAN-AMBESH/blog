@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink, Link, useLocation } from 'react-router-dom'
 import chiruImage from '../assets/chiru.jpeg'
+import { trackPageView } from '../lib/analytics.js'
 
 export function Layout({ children }) {
   const [showChiruMessage, setShowChiruMessage] = useState(false)
   const [chiruClickCount, setChiruClickCount] = useState(0)
+  const location = useLocation()
 
   useEffect(() => {
     if (!showChiruMessage) {
@@ -23,6 +25,13 @@ export function Layout({ children }) {
     setShowChiruMessage(true)
   }
 
+  useEffect(() => {
+    trackPageView({
+      pathname: `${location.pathname}${location.search}`,
+      title: document.title,
+    })
+  }, [location.pathname, location.search])
+
   return (
     <>
       <div className="shell">
@@ -39,7 +48,7 @@ export function Layout({ children }) {
         </header>
         <main className="content">{children}</main>
         <footer className="footer">
-            Made by someone who knows how to break into systems but still Googles CSS flexbox. © 2026 Ayan Ambesh.
+          Made by someone who knows how to break into systems but still Googles CSS flexbox. © 2026 Ayan Ambesh. Subscribe via <a href="/rss.xml">RSS</a> or <a href="mailto:ayan.ambesh@proton.me?subject=Newsletter%20Request">newsletter</a>.
         </footer>
       </div>
 
@@ -51,7 +60,7 @@ export function Layout({ children }) {
           onClick={handleChiruClick}
           aria-label="Show Chiru welcome message"
         >
-          <img src={chiruImage} alt="Chiru the cat" />
+          <img src={chiruImage} alt="Chiru the cat" loading="lazy" decoding="async" />
         </button>
         <p className={`chiru-message ${showChiruMessage ? 'is-visible' : ''}`}>
           This is my pet cat chiru, He welcomes you with all his little heart

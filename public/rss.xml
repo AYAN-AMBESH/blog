@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>whokilledtulpa</title>
+  <link>https://whokilledtulpa.com</link>
+  <description>Security, OSINT, and digital forensics notes by Ayan Ambesh.</description>
+  <language>en-us</language>
+  <item>
+    <title>MDX Lab Notes: Building Safer Security Writeups</title>
+    <link>https://whokilledtulpa.com/blog/mdx-lab-notes</link>
+    <guid>https://whokilledtulpa.com/blog/mdx-lab-notes</guid>
+    <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
+    <description>A sample MDX post with JSX callouts, code blocks, and media to test rich post rendering.</description>
+  </item>
+  <item>
+    <title>hosting-notes</title>
+    <link>https://whokilledtulpa.com/blog/hosting-notes</link>
+    <guid>https://whokilledtulpa.com/blog/hosting-notes</guid>
+    <pubDate>Sun, 26 Apr 2026 00:00:00 GMT</pubDate>
+    <description>title: Hosting Notes date: 2026 04 24 tags: devops notes I moved this site to a static hosting stack. Build command: npm run build Output folder: dist Deploy target: any static hos</description>
+  </item>
+  <item>
+    <title>welcome</title>
+    <link>https://whokilledtulpa.com/blog/welcome</link>
+    <guid>https://whokilledtulpa.com/blog/welcome</guid>
+    <pubDate>Sun, 26 Apr 2026 00:00:00 GMT</pubDate>
+    <description>title: Welcome To My Corner date: 2026 04 26 tags: intro web excerpt: A quick hello from my new personal site and how this blog works. This site is intentionally simple and text he</description>
+  </item>
+  <item>
+    <title>OSINT Daily Playbook: 20 Minute Triage Loop</title>
+    <link>https://whokilledtulpa.com/blog/osint-daily-playbook</link>
+    <guid>https://whokilledtulpa.com/blog/osint-daily-playbook</guid>
+    <pubDate>Sat, 25 Apr 2026 00:00:00 GMT</pubDate>
+    <description>A practical MDX sample post showing a repeatable OSINT triage routine and quick notes format.</description>
+  </item>
+</channel>
+</rss>

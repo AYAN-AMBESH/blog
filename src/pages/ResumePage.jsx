@@ -1,6 +1,12 @@
 import resumePdf from '../assets/resume.pdf'
+import { usePageSeo } from '../lib/seo.js'
 
 export function ResumePage() {
+  usePageSeo({
+    title: 'Resume',
+    description: 'Resume and downloadable PDF for Ayan Ambesh.',
+  })
+
   return (
     <section className="resume-page">
       <div className="resume-toolbar">

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://whokilledtulpa.com/sitemap.xml
+Sitemap: https://whokilledtulpa.com/rss.xml

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { allPosts } from '../lib/blogs.js'
+import { usePageSeo } from '../lib/seo.js'
 import heroVideo from '../assets/my_vid.mp4'
 
 const latestPosts = allPosts.slice(0, 3)
@@ -8,6 +9,12 @@ const latestPosts = allPosts.slice(0, 3)
 export function HomePage() {
   const [isMuted, setIsMuted] = useState(true)
   const videoRef = useRef(null)
+
+  usePageSeo({
+    title: 'Home',
+    description:
+      'Ayan Ambesh portfolio covering application security, digital forensics, OSINT, and hands-on write-ups.',
+  })
 
   const handleToggleMute = () => {
     setIsMuted((muted) => {
@@ -66,7 +73,8 @@ export function HomePage() {
               <a href="https://www.linkedin.com/in/ayan-ambesh/" target="_blank" rel="noreferrer">
                 LinkedIn
               </a>{' '}
-              / <Link to="/resume">Resume</Link> / <Link to="/blog">All posts</Link>
+              / <Link to="/resume">Resume</Link> / <Link to="/blog">All posts</Link> /{' '}
+              <a href="/rss.xml">RSS</a>
             </p>
           </article>
         </div>

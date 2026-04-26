@@ -1,14 +1,18 @@
 import { marked } from 'marked'
 
-const postModules = import.meta.glob('../../blogs/*.md', {
+const markdownPostModules = import.meta.glob('../../blogs/*.md', {
   eager: true,
   query: '?raw',
   import: 'default',
 })
 
+const mdxPostModules = import.meta.glob('../../blogs/*.mdx', {
+  eager: true,
+})
+
 function filePathToSlug(filePath) {
   const fileName = filePath.split('/').at(-1) ?? ''
-  return fileName.replace(/\.md$/i, '')
+  return fileName.replace(/\.(md|mdx)$/i, '')
 }
 
 function parseFrontmatter(source) {
@@ -84,24 +88,108 @@ function firstParagraph(text) {
   return clean.slice(0, 170)
 }
 
+function toPlainText(markdown) {
+  return markdown
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/!\[(.*?)\]\((.*?)\)/g, '$1')
+    .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/[>*_~\-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function countWords(text) {
+  return text ? text.split(/\s+/).filter(Boolean).length : 0
+}
+
+function readingTimeLabel(minutes) {
+  return `${minutes} min read`
+}
+
+function addLazyLoadingToImages(html) {
+  return html.replace(/<img\b([^>]*?)>/gi, (fullMatch, attrs) => {
+    let nextAttrs = attrs
+
+    if (!/\bloading\s*=/.test(nextAttrs)) {
+      nextAttrs += ' loading="lazy"'
+    }
+
+    if (!/\bdecoding\s*=/.test(nextAttrs)) {
+      nextAttrs += ' decoding="async"'
+    }
+
+    return `<img${nextAttrs}>`
+  })
+}
+
+function normalizeTags(tagsInput) {
+  if (!Array.isArray(tagsInput)) {
+    return []
+  }
+
+  return tagsInput.map((tag) => String(tag).trim()).filter(Boolean)
+}
+
 marked.setOptions({ gfm: true, breaks: true })
 
-export const allPosts = Object.entries(postModules)
+const markdownPosts = Object.entries(markdownPostModules)
   .map(([filePath, source]) => {
     const { data, content } = parseFrontmatter(source)
     const slug = data.slug || filePathToSlug(filePath)
     const parsedDate = normalizeDate(data.date)
+    const plainContent = toPlainText(content)
+    const wordCount = countWords(plainContent)
+    const readingMinutes = Math.max(1, Math.ceil(wordCount / 200))
+    const tags = normalizeTags(data.tags)
 
     return {
       slug,
       title: data.title || slug,
       date: parsedDate,
       dateLabel: parsedDate ? formatDate(parsedDate) : 'Unknown date',
-      tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
+      tags,
       excerpt: data.excerpt || firstParagraph(content),
-      html: marked.parse(content),
+      content: plainContent,
+      wordCount,
+      readingMinutes,
+      readingLabel: readingTimeLabel(readingMinutes),
+      html: addLazyLoadingToImages(marked.parse(content)),
+      Component: null,
     }
   })
+
+const mdxPosts = Object.entries(mdxPostModules).map(([filePath, module]) => {
+  const mdxModule = module || {}
+  const meta = typeof mdxModule.meta === 'object' && mdxModule.meta ? mdxModule.meta : {}
+  const slug = meta.slug || filePathToSlug(filePath)
+  const parsedDate = normalizeDate(meta.date)
+  const tags = normalizeTags(meta.tags)
+  const excerpt = meta.excerpt || `MDX post: ${meta.title || slug}`
+  const plainContent = [meta.title || slug, excerpt, tags.join(' '), meta.searchText || '']
+    .join(' ')
+    .trim()
+  const wordCount = countWords(plainContent)
+  const readingMinutes = Math.max(1, Math.ceil((wordCount || 120) / 200))
+
+  return {
+    slug,
+    title: meta.title || slug,
+    date: parsedDate,
+    dateLabel: parsedDate ? formatDate(parsedDate) : 'Unknown date',
+    tags,
+    excerpt,
+    content: plainContent,
+    wordCount,
+    readingMinutes,
+    readingLabel: readingTimeLabel(readingMinutes),
+    html: null,
+    Component: typeof mdxModule.default === 'function' ? mdxModule.default : null,
+  }
+})
+
+export const allPosts = [...markdownPosts, ...mdxPosts]
   .sort((a, b) => {
     const left = a.date ? a.date.getTime() : 0
     const right = b.date ? b.date.getTime() : 0
@@ -110,4 +198,39 @@ export const allPosts = Object.entries(postModules)
 
 export function getPostBySlug(slug) {
   return allPosts.find((post) => post.slug === slug)
+}
+
+export const allTags = Array.from(
+  new Set(allPosts.flatMap((post) => post.tags.map((tag) => tag.toLowerCase()))),
+).sort((a, b) => a.localeCompare(b))
+
+export function getRelatedPosts(slug, limit = 3) {
+  const currentPost = getPostBySlug(slug)
+  if (!currentPost) {
+    return []
+  }
+
+  const currentTags = new Set(currentPost.tags.map((tag) => tag.toLowerCase()))
+
+  return allPosts
+    .filter((post) => post.slug !== slug)
+    .map((post) => {
+      const overlap = post.tags.reduce((score, tag) => {
+        return currentTags.has(tag.toLowerCase()) ? score + 1 : score
+      }, 0)
+
+      return { post, overlap }
+    })
+    .filter(({ overlap }) => overlap > 0)
+    .sort((left, right) => {
+      if (right.overlap !== left.overlap) {
+        return right.overlap - left.overlap
+      }
+
+      const leftDate = left.post.date ? left.post.date.getTime() : 0
+      const rightDate = right.post.date ? right.post.date.getTime() : 0
+      return rightDate - leftDate
+    })
+    .slice(0, limit)
+    .map(({ post }) => post)
 }
