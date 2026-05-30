@@ -60,15 +60,20 @@ function upsertJsonLd(id, data) {
 export function usePageSeo({ title, description, type = 'website', robots = 'index,follow', structuredData = null }) {
   useEffect(() => {
     const siteName = 'whokilledtulpa'
+    const profileLinks = [
+      'https://linktr.ee/whokilledtulpa',
+      'https://profile.hackthebox.com/profile/019e78da-2223-7041-a9e2-cf2adba7d69a',
+      'https://tryhackme.com/p/whokilledtulpa',
+      'https://hackerone.com/whokilledtulpa',
+      'https://www.instagram.com/whokilledtulpa',
+      'https://www.youtube.com/@whokilledtulpa?sub_confirmation=1',
+    ]
     const fullTitle = title ? `${title} | ${siteName}` : siteName
 
     document.title = fullTitle
     upsertMetaByName('description', description)
     upsertMetaByName('robots', robots)
     upsertMetaByName('author', 'Ayan Ambesh')
-    upsertMetaByName('twitter:card', 'summary')
-    upsertMetaByName('twitter:title', fullTitle)
-    upsertMetaByName('twitter:description', description)
 
     upsertMetaByProperty('og:site_name', siteName)
     upsertMetaByProperty('og:title', fullTitle)
@@ -83,8 +88,14 @@ export function usePageSeo({ title, description, type = 'website', robots = 'ind
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: siteName,
+      alternateName: ['tulpa', 'whokilledtulpa blog'],
       url: window.location.origin,
       inLanguage: 'en',
+      sameAs: profileLinks,
+      publisher: {
+        '@type': 'Person',
+        name: 'Ayan Ambesh',
+      },
     }
 
     const userSchema = structuredData

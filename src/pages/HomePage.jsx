@@ -14,7 +14,7 @@ export function HomePage() {
   usePageSeo({
     title: 'Home',
     description:
-      'Ayan Ambesh portfolio covering application security, digital forensics, OSINT, and hands-on write-ups.',
+      'whokilledtulpa is Ayan Ambesh\'s portfolio and security blog covering application security, OSINT, digital forensics, and hands-on write-ups.',
     structuredData: [
       {
         '@context': 'https://schema.org',
