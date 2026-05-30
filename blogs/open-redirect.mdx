@@ -1,0 +1,227 @@
+export const meta = {
+      title: 'Open Redirects: The Vulnerability Everyone Ignores Until It Matters',
+      date: '2026-05-30',
+      tags: ['web-security', 'open-redirect', 'bug-bounty', 'phishing'],
+      excerpt:
+            'Open Redirects are rarely severe alone, but they become dangerous when combined with user trust, auth flows, and third-party integrations.',
+      slug: 'open-redirect',
+      searchText:
+            'open redirect next parameter phishing oauth redirect chain trust abuse bug bounty web security',
+}
+
+export const styles = {
+      lead: {
+            border: '1px solid #cbbfa7',
+            background: 'linear-gradient(135deg, #fffaf0, #f6ecdb)',
+            padding: '0.95rem 1rem',
+            borderRadius: '12px',
+            margin: '1rem 0',
+      },
+      grid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '0.65rem',
+            margin: '0.8rem 0',
+      },
+      card: {
+            border: '1px solid #d7c9ad',
+            background: '#fffaf2',
+            borderRadius: '10px',
+            padding: '0.7rem 0.8rem',
+      },
+      flow: {
+            border: '1px dashed #bdaa86',
+            background: '#fff7e8',
+            borderRadius: '10px',
+            padding: '0.85rem',
+            margin: '0.9rem 0',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+            whiteSpace: 'pre-wrap',
+      },
+}
+
+export function MiniCard({ title, children }) {
+      return (
+            <div style={styles.card}>
+                  <strong>{title}</strong>
+                  <div style={{ marginTop: '0.25rem' }}>{children}</div>
+            </div>
+      )
+}
+
+
+Most bug hunters eventually run into Open Redirects. If you spend enough time reading bounty discussions, you will see the same comments:
+
+> "Open Redirects are low severity."
+>
+> "They do not deserve a bounty."
+>
+> "They are just redirects."
+
+For a long time, I agreed.
+
+<div style={styles.lead}>
+      <strong>Core idea:</strong> the redirect itself is usually not the real impact. Trust is.
+      An attacker can borrow the reputation of a legitimate domain and weaponize that trust.
+</div>
+
+When combined with authentication logic, third-party services, or social engineering, a "simple" redirect can become much more interesting.
+
+## A Simple Scenario
+
+Imagine you receive these links in an email:
+
+<div style={styles.grid}>
+      <MiniCard title="Link A">
+            <code>https://totally-legit-login.com</code>
+      </MiniCard>
+      <MiniCard title="Link B">
+            <code>https://trusted-company.com/redirect?next=https://totally-legit-login.com</code>
+      </MiniCard>
+</div>
+
+Which one feels more convincing at first glance?
+
+Most users trust Link B because the visible domain appears familiar. Attackers rely on that split-second decision and on the fact that people rarely inspect every query parameter.
+
+## What Happens Behind the Scenes
+
+Redirects are normal in web applications. After login, users often move from one path to another:
+
+```text
+/login -> /dashboard
+```
+
+One common implementation looks like this:
+
+```http
+https://example.com/login?next=/dashboard
+```
+
+The issue starts when `next` is fully user-controlled without strict validation:
+
+```http
+https://example.com/login?next=https://attacker.com
+```
+
+A typical server response:
+
+```http
+HTTP/1.1 302 Found
+Location: https://attacker.com
+```
+
+The browser follows `Location` immediately. No exploit chain is required at this step. It is just misplaced trust.
+
+## Why This Bug Appears So Often
+
+Open Redirects usually come from convenience, not malicious design.
+
+- Returning users to their original page after auth
+- Payment handoff and callback flows
+- OAuth or SSO integrations
+- Marketing and campaign redirects
+- Third-party workflow transitions
+
+The pattern is simple: UX improves, validation is skipped, trust boundary is crossed.
+
+## Common Beginner Mistake
+
+Many testers try one payload and stop:
+
+```text
+https://attacker.com
+```
+
+URL parsing is often flexible enough that alternate payload formats behave differently:
+
+```text
+//attacker.com
+@attacker.com
+.attacker.com
+%2f%2fattacker.com
+```
+
+Blocking one shape does not mean the redirect is truly safe.
+
+## The Real Value: Chaining
+
+The most interesting reports are rarely standalone redirects. They are chain enablers.
+
+<div style={styles.flow}>
+Trusted Website
+      -> Authentication Flow
+      -> Open Redirect
+      -> Attacker Infrastructure
+</div>
+
+<div style={styles.flow}>
+Trusted Website
+      -> Third-Party Service
+      -> JavaScript Redirect
+      -> Malicious Website
+</div>
+
+Open Redirect is the bridge, not the destination.
+
+## How I Hunt for Open Redirects
+
+I start with redirect-like parameters:
+
+```text
+redirect=
+redirect_to=
+next=
+return=
+return_to=
+continue=
+callback=
+goto=
+destination=
+url=
+r=
+u=
+```
+
+Then I pivot into high-signal features:
+
+- OAuth flows
+- SSO flows
+- Login and logout handlers
+- Payment redirects
+- Password reset journeys
+- Third-party handoff pages
+
+Finally, I ask chain-focused questions:
+
+```text
+Can I fully control destination?
+Can I partially control destination?
+Can I inject special characters?
+Can I chain this with another feature?
+Can I bypass warnings or allowlists?
+```
+
+Those questions are often more valuable than the base bug itself.
+
+## Mindset Shift
+
+The biggest lesson from Open Redirects is not about redirects. It is about thinking in systems.
+
+Beginners often ask:
+
+> Is this vulnerable?
+
+Experienced researchers usually ask:
+
+> What can this become?
+
+Alone, Open Redirects may be low impact. Combined with phishing, auth workflows, third-party trust, or another bug, they can materially raise risk.
+
+Security is rarely about isolated findings. It is about how pieces connect.
+
+## Further Reading
+
+- [Shopify Theme Preview Open Redirect](https://hackerone.com/reports/101962)
+- [Shopify Login Open Redirect](https://hackerone.com/reports/103772)
+- [HackerOne Zendesk Redirect Chain](https://hackerone.com/reports/111968)

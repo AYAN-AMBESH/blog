@@ -2,30 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://whokilledtulpa.com/</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
     <loc>https://whokilledtulpa.com/blog</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
     <loc>https://whokilledtulpa.com/resume</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
-    <loc>https://whokilledtulpa.com/blog/hosting-notes</loc>
-    <lastmod>2026-04-26</lastmod>
-  </url>
-  <url>
-    <loc>https://whokilledtulpa.com/blog/mdx-lab-notes</loc>
-    <lastmod>2026-04-26</lastmod>
-  </url>
-  <url>
-    <loc>https://whokilledtulpa.com/blog/osint-daily-playbook</loc>
-    <lastmod>2026-04-26</lastmod>
-  </url>
-  <url>
-    <loc>https://whokilledtulpa.com/blog/welcome</loc>
-    <lastmod>2026-04-26</lastmod>
+    <loc>https://whokilledtulpa.com/blog/open-redirect</loc>
+    <lastmod>2026-05-30</lastmod>
   </url>
 </urlset>
