@@ -48,7 +48,7 @@ export function Layout({ children }) {
         </header>
         <main className="content">{children}</main>
         <footer className="footer">
-          Made by someone who knows how to break into systems but still Googles CSS flexbox. © 2026 Ayan Ambesh. Subscribe via <a href="/rss.xml">RSS</a> or <a href="mailto:ayan.ambesh@proton.me?subject=Newsletter%20Request">newsletter</a>.
+          Made by someone who knows how to break into systems but still Googles CSS flexbox. Subscribe via <a href="/rss.xml">RSS</a> or <a href="mailto:ayan.ambesh@proton.me?subject=Newsletter%20Request">newsletter</a>.
         </footer>
       </div>
 

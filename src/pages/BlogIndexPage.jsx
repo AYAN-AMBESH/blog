@@ -6,11 +6,19 @@ import { usePageSeo } from '../lib/seo.js'
 export function BlogIndexPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTag, setActiveTag] = useState('all')
+  const baseUrl = window.location.origin
 
   usePageSeo({
     title: 'Blog Archive',
     description:
       'Security, OSINT, and digital forensics notes with searchable posts and tag filters.',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Blog Archive',
+      url: `${baseUrl}/blog`,
+      description: 'Security, OSINT, and digital forensics notes with searchable posts and tag filters.',
+    },
   })
 
   const filteredPosts = useMemo(() => {

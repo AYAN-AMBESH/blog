@@ -1,4 +1,5 @@
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 const markdownPostModules = import.meta.glob('../../blogs/*.md', {
   eager: true,
@@ -95,7 +96,7 @@ function toPlainText(markdown) {
     .replace(/!\[(.*?)\]\((.*?)\)/g, '$1')
     .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
     .replace(/^#{1,6}\s+/gm, '')
-    .replace(/[>*_~\-]/g, ' ')
+    .replace(/[>*_~-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -121,6 +122,15 @@ function addLazyLoadingToImages(html) {
     }
 
     return `<img${nextAttrs}>`
+  })
+}
+
+function sanitizeHtml(html) {
+  return DOMPurify.sanitize(html, {
+    USE_PROFILES: { html: true },
+    FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed', 'form', 'input', 'button'],
+    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'style'],
+    ALLOW_UNKNOWN_PROTOCOLS: false,
   })
 }
 
@@ -155,7 +165,7 @@ const markdownPosts = Object.entries(markdownPostModules)
       wordCount,
       readingMinutes,
       readingLabel: readingTimeLabel(readingMinutes),
-      html: addLazyLoadingToImages(marked.parse(content)),
+      html: addLazyLoadingToImages(sanitizeHtml(marked.parse(content))),
       Component: null,
     }
   })

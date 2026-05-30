@@ -36,18 +36,41 @@ function upsertCanonical(url) {
   canonical.setAttribute('href', url)
 }
 
-export function usePageSeo({ title, description, type = 'website' }) {
+function upsertJsonLd(id, data) {
+  const selector = `script[type="application/ld+json"][data-seo-id="${id}"]`
+  let script = document.head.querySelector(selector)
+
+  if (!data) {
+    if (script) {
+      script.remove()
+    }
+    return
+  }
+
+  if (!script) {
+    script = document.createElement('script')
+    script.setAttribute('type', 'application/ld+json')
+    script.setAttribute('data-seo-id', id)
+    document.head.appendChild(script)
+  }
+
+  script.textContent = JSON.stringify(data)
+}
+
+export function usePageSeo({ title, description, type = 'website', robots = 'index,follow', structuredData = null }) {
   useEffect(() => {
     const siteName = 'whokilledtulpa'
     const fullTitle = title ? `${title} | ${siteName}` : siteName
 
     document.title = fullTitle
     upsertMetaByName('description', description)
-    upsertMetaByName('robots', 'index,follow')
+    upsertMetaByName('robots', robots)
+    upsertMetaByName('author', 'Ayan Ambesh')
     upsertMetaByName('twitter:card', 'summary')
     upsertMetaByName('twitter:title', fullTitle)
     upsertMetaByName('twitter:description', description)
 
+    upsertMetaByProperty('og:site_name', siteName)
     upsertMetaByProperty('og:title', fullTitle)
     upsertMetaByProperty('og:description', description)
     upsertMetaByProperty('og:type', type)
@@ -55,5 +78,22 @@ export function usePageSeo({ title, description, type = 'website' }) {
     const canonicalUrl = `${window.location.origin}${window.location.pathname}`
     upsertCanonical(canonicalUrl)
     upsertMetaByProperty('og:url', canonicalUrl)
-  }, [description, title, type])
+
+    const websiteSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      url: window.location.origin,
+      inLanguage: 'en',
+    }
+
+    const userSchema = structuredData
+      ? Array.isArray(structuredData)
+        ? structuredData
+        : [structuredData]
+      : []
+
+    upsertJsonLd('website', websiteSchema)
+    upsertJsonLd('page', userSchema.length > 0 ? userSchema : null)
+  }, [description, robots, structuredData, title, type])
 }

@@ -5,6 +5,8 @@ import { usePageSeo } from '../lib/seo.js'
 export function BlogPostPage() {
   const { slug = '' } = useParams()
   const post = getPostBySlug(slug)
+  const baseUrl = window.location.origin
+  const postUrl = `${baseUrl}/blog/${slug}`
 
   usePageSeo({
     title: post ? post.title : 'Post Not Found',
@@ -12,6 +14,26 @@ export function BlogPostPage() {
       ? `${post.excerpt.slice(0, 145)}...`
       : 'The requested post could not be found in the archive.',
     type: post ? 'article' : 'website',
+    robots: post ? 'index,follow' : 'noindex,nofollow',
+    structuredData: post
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: post.title,
+          description: post.excerpt,
+          datePublished: post.date ? post.date.toISOString() : undefined,
+          dateModified: post.date ? post.date.toISOString() : undefined,
+          url: postUrl,
+          author: {
+            '@type': 'Person',
+            name: 'Ayan Ambesh',
+          },
+          publisher: {
+            '@type': 'Person',
+            name: 'Ayan Ambesh',
+          },
+        }
+      : null,
   })
 
   if (!post) {

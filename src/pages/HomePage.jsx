@@ -9,11 +9,30 @@ const latestPosts = allPosts.slice(0, 3)
 export function HomePage() {
   const [isMuted, setIsMuted] = useState(true)
   const videoRef = useRef(null)
+  const baseUrl = window.location.origin
 
   usePageSeo({
     title: 'Home',
     description:
       'Ayan Ambesh portfolio covering application security, digital forensics, OSINT, and hands-on write-ups.',
+    structuredData: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: 'Ayan Ambesh',
+        url: baseUrl,
+        sameAs: ['https://github.com/AYAN-AMBESH', 'https://www.linkedin.com/in/ayan-ambesh/'],
+        jobTitle: 'Security Professional',
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Home',
+        url: `${baseUrl}/`,
+        description:
+          'Ayan Ambesh portfolio covering application security, digital forensics, OSINT, and hands-on write-ups.',
+      },
+    ],
   })
 
   const handleToggleMute = () => {
@@ -57,7 +76,7 @@ export function HomePage() {
           <article className="panel">
             <h2>About</h2>
             <p>
-               I find things people hide, fix things people broke, and write about both.
+               I find things people hide, fix things people break, and write about both.
                I do application security, OSINT, and digital forensics, 
                basically I'm the person you call after things go wrong,
                and occasionally before. Always perpetually debugging something.

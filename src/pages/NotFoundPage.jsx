@@ -5,6 +5,7 @@ export function NotFoundPage() {
   usePageSeo({
     title: '404 Not Found',
     description: 'Page not found. Explore the blog archive, homepage, or resume.',
+    robots: 'noindex,nofollow',
   })
 
   return (

@@ -135,14 +135,21 @@ async function collectBlogEntries() {
   return entries.sort((a, b) => b.date.localeCompare(a.date))
 }
 
-function getBlogRoutes(entries) {
-  return entries.map((entry) => `/blog/${entry.slug}`).sort((a, b) => a.localeCompare(b))
+function getBlogRouteEntries(entries) {
+  return entries
+    .map((entry) => ({
+      path: `/blog/${entry.slug}`,
+      lastmod: entry.date,
+      changefreq: 'monthly',
+      priority: '0.72',
+    }))
+    .sort((a, b) => a.path.localeCompare(b.path))
 }
 
-function createSitemapXml(routes) {
-  const urls = routes
-    .map((route) => {
-      return `  <url>\n    <loc>${siteUrl}${route}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`
+function createSitemapXml(routeEntries) {
+  const urls = routeEntries
+    .map((routeEntry) => {
+      return `  <url>\n    <loc>${siteUrl}${routeEntry.path}</loc>\n    <lastmod>${routeEntry.lastmod}</lastmod>\n    <changefreq>${routeEntry.changefreq}</changefreq>\n    <priority>${routeEntry.priority}</priority>\n  </url>`
     })
     .join('\n')
 
@@ -161,9 +168,13 @@ function createRssXml(entries) {
 }
 
 async function main() {
-  const staticRoutes = ['/', '/blog', '/resume']
+  const staticRoutes = [
+    { path: '/', lastmod: today, changefreq: 'weekly', priority: '1.0' },
+    { path: '/blog', lastmod: today, changefreq: 'daily', priority: '0.9' },
+    { path: '/resume', lastmod: today, changefreq: 'monthly', priority: '0.6' },
+  ]
   const blogEntries = await collectBlogEntries()
-  const blogRoutes = getBlogRoutes(blogEntries)
+  const blogRoutes = getBlogRouteEntries(blogEntries)
   const allRoutes = [...staticRoutes, ...blogRoutes]
 
   await fs.mkdir(publicDir, { recursive: true })
