@@ -1,89 +1,428 @@
-# How you can truly learn pentesting
+export const meta = {
+      title: 'How you can truly learn pentesting',
+      date: '2026-06-27',
+      tags: ['web-security', 'pentesting', 'reconnaissance', 'methodology'],
+      excerpt:
+            'Reconnaissance is the foundation of web application pentesting. Learn how to understand an application before testing vulnerabilities.',
+      slug: 'reconnaissance',
+      searchText:
+            'reconnaissance methodology web application pentesting attack surface request response http https burp suite',
+}
 
-I wanted to learn about web application pentesting, so I started reading about it and practiced in portswigger academy. To learn about vulnerability and how to find them, One thing I noticed was there wasn't any methodology mentioned on portswigger that i could follow. (We are supposed to create our own methadology)
+export const styles = {
+      lead: {
+            border: '1px solid #cbbfa7',
+            background: 'linear-gradient(135deg, #fffaf0, #f6ecdb)',
+            padding: '0.95rem 1rem',
+            borderRadius: '12px',
+            margin: '1rem 0',
+      },
+      grid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '0.65rem',
+            margin: '0.8rem 0',
+      },
+      card: {
+            border: '1px solid #d7c9ad',
+            background: '#fffaf2',
+            borderRadius: '10px',
+            padding: '0.7rem 0.8rem',
+      },
+      flow: {
+            border: '1px dashed #bdaa86',
+            background: '#fff7e8',
+            borderRadius: '10px',
+            padding: '0.85rem',
+            margin: '0.9rem 0',
+            fontFamily:
+                  'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+            whiteSpace: 'pre-wrap',
+      },
+}
 
-I am sharing my own methadology from which you can either follow or take reference from and craft your own from it. (You can also follow owasp checklist for finding vulnerabilities https://owasp.org/www-project-web-security-testing-guide/latest/)
+export function MiniCard({ title, children }) {
+      return (
+            <div style={styles.card}>
+                  <strong>{title}</strong>
+                  <div style={{ marginTop: '0.25rem' }}>{children}</div>
+            </div>
+      )
+}
 
-As you may learn about pentesting in general, you will get to know about the phases with each phase being important on their own (learn more about penetration testing from https://www.offsec.com/cyberversity/penetration-testing/)
+I wanted to learn about web application pentesting, so I started reading about it and practiced in PortSwigger Academy. To learn about vulnerabilities and how to find them, one thing I noticed was there wasn't any methodology mentioned on PortSwigger that I could follow. (We are supposed to create our own methodology.)
 
-What I'm gonna talk about is the first phase Reconnaissance
+I am sharing my own methodology from which you can either follow or take reference from and craft your own from it. (You can also follow the OWASP Checklist for finding vulnerabilities: https://owasp.org/www-project-web-security-testing-guide/latest/)
 
-It is very valuable and important as this creates the fundamental base for the rest of the phases.
+As you learn about pentesting in general, you will get to know about the phases, with each phase being important on its own. (Learn more about penetration testing from https://www.offsec.com/cyberversity/penetration-testing/)
 
-## What do you think a website is? what about HTTP or HTTPS?
+What I'm going to talk about is the first phase: Reconnaissance.
 
-If you learn about Networking a part of computer science you will get to know about OSI, TCP/IP models and you will find protocols in every layer of these models. Application layer is the interface through which your software application (web browser) exchanges data via protocols like HTTP or HTTPS.
+<div style={styles.lead}>
+      <strong>Core idea:</strong> Reconnaissance is very valuable and important as it
+      creates the fundamental base for the rest of the penetration testing process.
+      The better you understand an application, the easier it becomes to identify
+      trust boundaries and potential vulnerabilities.
+</div>
 
-So, if I were to explain this like ELI5 (explain like im 5), http/https are ways through which two computer systems communicate and share data with each other. I won't go into details about networking as this is the part I'm leaving for the reader to find out themselves.
+## What do you think a website is? What about HTTP or HTTPS?
 
-Now about the topic, http/https works as if you (Bob) are asking your friend (Alice) where a certain book is stored in her house and Bob requires it, So Bob sends a request to Alice with the specifications of the book like i want Real-world Bug Hunting book and tells Alice that it might be on the third row of the bookshelf in her room on second floor, after recieving the request, Alice replies with a Response that she found the book and gives it to Bob (If Bob and Alice are good friends, Bob should always return the book back).
+If you learn about networking, a part of computer science, you will get to know about the OSI and TCP/IP models, and you will find protocols in every layer of these models. The Application Layer is the interface through which your software application (web browser) exchanges data via protocols like HTTP or HTTPS.
 
-Now you must understand how http really works lets get deeper in it, Since http/https are stateless protocols meaning every request is independent of each other how do you think a real world application works if it contains multiple users and each user is required to login? Thats where cookies, sessions come into the picture. Cookies and sessions are used to store the user authentication data so every time a request is made through that use a cookie or a session id is sent through that request so that server can identify which user has requested the data and which user data should be sent via response.
+So, if I were to explain this like ELI5 (Explain Like I'm 5), HTTP/HTTPS are ways through which two computer systems communicate and share data with each other. I won't go into details about networking as this is the part I'm leaving for the reader to find out themselves.
+
+Now about the topic, HTTP/HTTPS works as if you (Bob) are asking your friend (Alice) where a certain book is stored in her house and Bob requires it. So Bob sends a request to Alice with the specifications of the book, like "I want the Real-World Bug Hunting book," and tells Alice that it might be on the third row of the bookshelf in her room on the second floor. After receiving the request, Alice replies with a response that she found the book and gives it to Bob. (If Bob and Alice are good friends, Bob should always return the book back.)
+
+<div style={styles.flow}>
+Bob (Client)
+      -> Sends HTTP Request
+      -> Alice (Server)
+      -> Sends HTTP Response
+      -> Bob (Client)
+</div>
+
+Now you must understand how HTTP really works. Let's get deeper into it.
+
+Since HTTP/HTTPS are stateless protocols, meaning every request is independent of each other, how do you think a real-world application works if it contains multiple users and each user is required to login?
+
+That's where cookies and sessions come into the picture.
+
+Cookies and sessions are used to store the user authentication data so every time a request is made through that user, a cookie or a session ID is sent through that request so that the server can identify which user has requested the data and which user's data should be sent via the response.
+
+<div style={styles.grid}>
+      <MiniCard title="HTTP">
+            A stateless protocol used by clients and servers to exchange data.
+      </MiniCard>
+
+      <MiniCard title="Cookies & Sessions">
+            Used to identify authenticated users across multiple independent
+            HTTP requests.
+      </MiniCard>
+</div>
 
 ## Request & Response
 
 To understand pentesting better, you should first understand how data moves between client and server in every interaction. Whenever you click, submit, or load anything on a website, a request is sent and a response is returned. If you can read this flow clearly, you can map behaviour, trust boundaries, and possible weak points faster during reconnaissance.
 
-HTTP and HTTPS are defined using specific RFC (Request for comment) i.e. RFC 9110, RFC 9112 (there are older RFC documents but these mentioned arae the latest) for HTTP and RFC 2818 for HTTPS
+HTTP and HTTPS are defined using specific RFC (Request for Comments), i.e. RFC 9110 and RFC 9112 (there are older RFC documents but these mentioned are the latest) for HTTP and RFC 2818 for HTTPS.
 
-Request and Response contain 
+<div style={styles.flow}>
+Browser
+      -> HTTP Request
+      -> Web Server
+      -> HTTP Response
+      -> Browser
+</div>
 
-### Request Components
+Request and Response contain:
 
-Request Line: 
-which contain HTTP Method (GET for fetching the data, POST for submitting the data, PUT to update the data, DELETE to delete the specific resource)
+## Request Components
 
-Target: The path of the resource (URI)
-eg /admin, /login, /logout
+<div style={styles.lead}>
+      <strong>Core idea:</strong> Every HTTP request contains several components.
+      Understanding what each part does makes it much easier to identify user input,
+      trust boundaries, and potential attack surfaces during reconnaissance.
+</div>
 
-HTTP version: The version of protocol being used
+<div style={styles.grid}>
+      <MiniCard title="Request Line">
+            Contains the HTTP Method, Target (URI), and the HTTP Version.
+      </MiniCard>
 
-Request Headers:
-Domain name of server, informatiion of the browser and so on (Metadata about how the request should be handled)
+      <MiniCard title="Request Headers">
+            Metadata about the request such as the host, browser information,
+            accepted content types, cookies, and more.
+      </MiniCard>
 
-Request Body: 
-This carries the data from client to server
+      <MiniCard title="Request Body">
+            Carries data from the client to the server, typically with methods
+            such as POST, PUT, or PATCH.
+      </MiniCard>
+</div>
 
-### Response Components
+### Request Line
 
-Status Line:
-HTTP Version
-Status Code: A 3 digit number which is used for classification
+The Request Line contains three important pieces of information.
 
-HTTP Headers: 
-Metadata detailing how the response should be handled
+#### HTTP Method
 
-Response Body:
-The data or content which is sent back to clienct
+The HTTP Method defines what action the client wants the server to perform.
+
+- **GET** — Fetch data.
+- **POST** — Submit data.
+- **PUT** — Update existing data.
+- **DELETE** — Delete a specific resource.
+
+#### Target
+
+The Target is the path of the requested resource (URI).
+
+Examples:
+
+```text
+/admin
+/login
+/logout
+````
+
+#### HTTP Version
+
+The version of the HTTP protocol being used for the request.
+
+---
+
+### Request Headers
+
+Headers contain metadata about how the request should be handled.
+
+Some common examples include:
+
+* Domain name of the server.
+* Information about the browser.
+* Content types.
+* Cookies.
+* Authentication headers.
+
+Think of headers as additional information that helps the server correctly process the request.
+
+---
+
+### Request Body
+
+The Request Body carries the data from the client to the server.
+
+Examples include:
+
+* Login credentials
+* Registration forms
+* JSON payloads
+* XML requests
+* File uploads
+
+Not every HTTP request contains a body. GET requests, for example, usually do not.
+
+---
+
+## Response Components
+
+<div style={styles.lead}>
+      <strong>Core idea:</strong> After processing a request, the server returns a
+      response. Learning to read responses is just as important as understanding
+      requests because they reveal application behaviour, technologies, and
+      potential security weaknesses.
+</div>
+
+<div style={styles.grid}>
+      <MiniCard title="Status Line">
+            Contains the HTTP Version and the Status Code returned by the server.
+      </MiniCard>
+      <MiniCard title="Response Headers">
+            Metadata describing how the browser should process the response.
+      </MiniCard>
+
+      <MiniCard title="Response Body">
+            The actual content returned by the server such as HTML, JSON, images,
+            files, or API responses.
+      </MiniCard>
+</div>
+
+### Status Line
+
+The Status Line contains:
+
+* HTTP Version
+* Status Code
+
+A Status Code is a three-digit number used for classification of the server response.
+
+---
+
+### Response Headers
+
+Response Headers contain metadata detailing how the response should be handled.
+
+Examples include:
+
+* Content-Type
+* Cache-Control
+* Set-Cookie
+* Server
+* Content-Length
+
+---
+
+### Response Body
+
+The Response Body contains the actual content that is sent back to the client.
+
+Depending on the application, this may include:
+
+* HTML pages
+* JSON responses
+* XML data
+* Images
+* JavaScript
+* Downloadable files
+
+<div style={styles.flow}>
+Browser
+      -> Sends Request
+      -> Server Processes Request
+      -> Returns Response
+      -> Browser Renders Content
+</div>
 
 ## Reconnaissance Phase
 
-The first phase (Reconnaissance) is to map out the web application which you can also do with the help of tools such as burpsuite
+The first phase (Reconnaissance) is to map out the web application, which you can also do with the help of tools such as Burp Suite.
 
-Before picking any vulnerability 
+<div style={styles.lead}>
+      <strong>Core idea:</strong> Before picking any vulnerability, first understand
+      how the application behaves. Reconnaissance is about building a complete map
+      of the application rather than immediately testing payloads.
+</div>
 
-### 1. Map the Attack Surface
+Before picking any vulnerability:
 
-- List every input: URL parameters, query strings, form fields, headers (User-Agent,X-Forwarded-For etc), cookies, JSON/XML body fields, multipart file uploads, WebSocket messages, GraphQL queries
+## 1. Map the Attack Surface
 
-- Map all the API endpoints: /api,/graphql,/swagger.json,/openapi.json
+<div style={styles.lead}>
+      <strong>Core idea:</strong> Every vulnerability begins with an input.
+      Before testing anything, identify every location where user-controlled
+      data enters the application.
+</div>
 
-- Identify The tech stack: use wappalyzer, check Response Headers, look for error messages, Javascript source maps
+Map every possible input that the application accepts.
 
-### 2. Context Map
+- List every input:
+  - URL parameters
+  - Query strings
+  - Form fields
+  - Headers (User-Agent, X-Forwarded-For, etc.)
+  - Cookies
+  - JSON/XML body fields
+  - Multipart file uploads
+  - WebSocket messages
+  - GraphQL queries
 
-- For each input send a harmless unique string (e.g. T9a4sl@p) and find every place it reappears in the response
+- Map all the API endpoints:
 
-- Note what surrounds the string - This context decides which vuln class applies 
+```text
+/api
+/graphql
+/swagger.json
+/openapi.json
+````
 
-- Send junk probe string with speacial characters \(\<\>\"\'\;\-\-\|\&\#\$\{\}\) and record which survive, get encoded, or get stripped
+* Identify the tech stack:
 
-### 3. Determine Response Behaviour
+  * Use Wappalyzer.
+  * Check Response Headers.
+  * Look for error messages.
+  * Inspect JavaScript source maps.
 
-- Check response content-type header, if not text/html, XSS may not fire regardless of payload
+<div style={styles.flow}>
+User Input
+      ↓
+Application Entry Point
+      ↓
+Request Processing
+      ↓
+Response
+</div>
 
-- Note WAF behaviour (blocked response patterns, rate limiting headers)
+## 2. Context Map
 
-- Test HTTP method override (X-HTTP-Method-Override: PUT)
+<div style={styles.lead}>
+      <strong>Core idea:</strong> Finding where your input appears is often more
+      valuable than immediately trying payloads. Context determines which
+      vulnerability classes are even possible.
+</div>
 
-- Only now decide which vulnerability category to test for this input
+* For each input send a harmless unique string (e.g. `T9a4sl@p`) and find every place it reappears in the response.
+
+* Note what surrounds the string.
+
+This context decides which vulnerability class applies.
+
+* Send a junk probe string with special characters:
+
+```text
+<>"';--|&#${}
+```
+
+and record:
+
+* Which survive.
+* Which get encoded.
+* Which get stripped.
+
+<div style={styles.flow}>
+Input
+      ↓
+Reflection
+      ↓
+Context
+      ↓
+Potential Vulnerability
+</div>
+
+## 3. Determine Response Behaviour
+
+<div style={styles.lead}>
+      <strong>Core idea:</strong> Before deciding which vulnerability to test,
+      understand how the application responds to different requests.
+</div>
+
+* Check the **Content-Type** response header.
+
+If it is not `text/html`, XSS may not fire regardless of payload.
+
+* Note WAF behaviour.
+
+Look for:
+
+* Blocked response patterns.
+
+* Rate limiting headers.
+
+* Test HTTP Method Override.
+
+Example:
+
+```http
+X-HTTP-Method-Override: PUT
+```
+
+* Only now decide which vulnerability category to test for this input.
+
+<div style={styles.flow}>
+Map Inputs
+      ↓
+Find Reflection
+      ↓
+Understand Context
+      ↓
+Observe Response Behaviour
+      ↓
+Choose Vulnerability Class
+</div>
+
+## Mindset Shift
+
+Reconnaissance is not about throwing payloads at every parameter.
+
+It is about understanding how an application behaves before attempting to exploit it.
+
+Beginners often ask:
+
+> Which payload should I use?
+
+Experienced testers usually ask:
+
+> How does this application actually work?
+
+The more complete your understanding of the application, the easier it becomes to identify trust boundaries, hidden functionality, and potential vulnerabilities.
+
+Security is rarely about blindly testing payloads. It is about understanding systems first.
+
