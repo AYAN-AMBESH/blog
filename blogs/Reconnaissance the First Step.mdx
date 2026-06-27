@@ -1,0 +1,89 @@
+# How you can truly learn pentesting
+
+I wanted to learn about web application pentesting, so I started reading about it and practiced in portswigger academy. To learn about vulnerability and how to find them, One thing I noticed was there wasn't any methodology mentioned on portswigger that i could follow. (We are supposed to create our own methadology)
+
+I am sharing my own methadology from which you can either follow or take reference from and craft your own from it. (You can also follow owasp checklist for finding vulnerabilities https://owasp.org/www-project-web-security-testing-guide/latest/)
+
+As you may learn about pentesting in general, you will get to know about the phases with each phase being important on their own (learn more about penetration testing from https://www.offsec.com/cyberversity/penetration-testing/)
+
+What I'm gonna talk about is the first phase Reconnaissance
+
+It is very valuable and important as this creates the fundamental base for the rest of the phases.
+
+## What do you think a website is? what about HTTP or HTTPS?
+
+If you learn about Networking a part of computer science you will get to know about OSI, TCP/IP models and you will find protocols in every layer of these models. Application layer is the interface through which your software application (web browser) exchanges data via protocols like HTTP or HTTPS.
+
+So, if I were to explain this like ELI5 (explain like im 5), http/https are ways through which two computer systems communicate and share data with each other. I won't go into details about networking as this is the part I'm leaving for the reader to find out themselves.
+
+Now about the topic, http/https works as if you (Bob) are asking your friend (Alice) where a certain book is stored in her house and Bob requires it, So Bob sends a request to Alice with the specifications of the book like i want Real-world Bug Hunting book and tells Alice that it might be on the third row of the bookshelf in her room on second floor, after recieving the request, Alice replies with a Response that she found the book and gives it to Bob (If Bob and Alice are good friends, Bob should always return the book back).
+
+Now you must understand how http really works lets get deeper in it, Since http/https are stateless protocols meaning every request is independent of each other how do you think a real world application works if it contains multiple users and each user is required to login? Thats where cookies, sessions come into the picture. Cookies and sessions are used to store the user authentication data so every time a request is made through that use a cookie or a session id is sent through that request so that server can identify which user has requested the data and which user data should be sent via response.
+
+## Request & Response
+
+To understand pentesting better, you should first understand how data moves between client and server in every interaction. Whenever you click, submit, or load anything on a website, a request is sent and a response is returned. If you can read this flow clearly, you can map behaviour, trust boundaries, and possible weak points faster during reconnaissance.
+
+HTTP and HTTPS are defined using specific RFC (Request for comment) i.e. RFC 9110, RFC 9112 (there are older RFC documents but these mentioned arae the latest) for HTTP and RFC 2818 for HTTPS
+
+Request and Response contain 
+
+### Request Components
+
+Request Line: 
+which contain HTTP Method (GET for fetching the data, POST for submitting the data, PUT to update the data, DELETE to delete the specific resource)
+
+Target: The path of the resource (URI)
+eg /admin, /login, /logout
+
+HTTP version: The version of protocol being used
+
+Request Headers:
+Domain name of server, informatiion of the browser and so on (Metadata about how the request should be handled)
+
+Request Body: 
+This carries the data from client to server
+
+### Response Components
+
+Status Line:
+HTTP Version
+Status Code: A 3 digit number which is used for classification
+
+HTTP Headers: 
+Metadata detailing how the response should be handled
+
+Response Body:
+The data or content which is sent back to clienct
+
+## Reconnaissance Phase
+
+The first phase (Reconnaissance) is to map out the web application which you can also do with the help of tools such as burpsuite
+
+Before picking any vulnerability 
+
+### 1. Map the Attack Surface
+
+- List every input: URL parameters, query strings, form fields, headers (User-Agent,X-Forwarded-For etc), cookies, JSON/XML body fields, multipart file uploads, WebSocket messages, GraphQL queries
+
+- Map all the API endpoints: /api,/graphql,/swagger.json,/openapi.json
+
+- Identify The tech stack: use wappalyzer, check Response Headers, look for error messages, Javascript source maps
+
+### 2. Context Map
+
+- For each input send a harmless unique string (e.g. T9a4sl@p) and find every place it reappears in the response
+
+- Note what surrounds the string - This context decides which vuln class applies 
+
+- Send junk probe string with speacial characters \(\<\>\"\'\;\-\-\|\&\#\$\{\}\) and record which survive, get encoded, or get stripped
+
+### 3. Determine Response Behaviour
+
+- Check response content-type header, if not text/html, XSS may not fire regardless of payload
+
+- Note WAF behaviour (blocked response patterns, rate limiting headers)
+
+- Test HTTP method override (X-HTTP-Method-Override: PUT)
+
+- Only now decide which vulnerability category to test for this input

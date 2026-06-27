@@ -45,10 +45,6 @@ export function BlogIndexPage() {
     <section>
       <div className="hero">
         <h1>Blog Archive</h1>
-        <p>
-          Every markdown file in blogs/ becomes a post card here and a page at
-          /blog/your-file-name.
-        </p>
       </div>
 
       <div className="blog-controls" aria-label="Blog filters">
