@@ -1,0 +1,149 @@
+export const meta = {
+      title: 'Cross Site Scripting (XSS)',
+      date: '2026-07-05',
+      tags: ['web-security', 'pentesting', 'xss'],
+      excerpt:
+            'Since I have written the blogs on how to learn Web pentesting, this time im gonna write a series of blogs covering every web vulnerability starting with XSS.',
+      slug: 'xss',
+      searchText:
+            'cross site scripting xss reflected stored dom blind pentesting methodology context mapping HTML body attribute script tag url template expression bypass csp',
+}
+
+export const styles = {
+      lead: {
+            border: '1px solid #cbbfa7',
+            background: 'linear-gradient(135deg, #fffaf0, #f6ecdb)',
+            padding: '0.95rem 1rem',
+            borderRadius: '12px',
+            margin: '1rem 0',
+      },
+      grid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '0.65rem',
+            margin: '0.8rem 0',
+      },
+      card: {
+            border: '1px solid #d7c9ad',
+            background: '#fffaf2',
+            borderRadius: '10px',
+            padding: '0.7rem 0.8rem',
+      },
+      flow: {
+            border: '1px dashed #bdaa86',
+            background: '#fff7e8',
+            borderRadius: '10px',
+            padding: '0.85rem',
+            margin: '0.9rem 0',
+            fontFamily:
+                  'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+            whiteSpace: 'pre-wrap',
+      },
+}
+
+export function MiniCard({ title, children }) {
+      return (
+            <div style={styles.card}>
+                  <strong>{title}</strong>
+                  <div style={{ marginTop: '0.25rem' }}>{children}</div>
+            </div>
+      )
+}
+
+Since I have written the blogs on how to learn Web pentesting, this time im gonna write a series of blogs covering every web vulnerability starting with XSS.
+
+<div style={styles.lead}>
+      <strong>Core idea:</strong> As you may have read in reconnaissance, the
+      first step is always contextual mapping even before we go towards payload
+      writing.
+</div>
+
+There are many sub categories of XSS i.e. Reflected, Stored, DOM and Blind.
+
+<div style={styles.grid}>
+      <MiniCard title="Reflected XSS">
+            Input is reflected in the immediate response.
+      </MiniCard>
+      <MiniCard title="Stored XSS">
+            Input is stored on the server and rendered later.
+      </MiniCard>
+      <MiniCard title="DOM XSS">
+            Vulnerability exists in client-side JavaScript.
+      </MiniCard>
+      <MiniCard title="Blind XSS">
+            Input is saved and executed in another application/admin panel.
+      </MiniCard>
+</div>
+
+## Reflected XSS
+
+<div style={styles.lead}>
+      <strong>First Step:</strong> The very first step is to find any field
+      where you can input any value and then to check where it is being
+      reflected in the response, whether it is modified or unmodified.
+</div>
+
+For Reflected XSS, you will generally find the input in HTML body, HTML attribute, script tag and URL.
+
+### If it is in HTML body
+
+We test with tag injection:
+
+```html
+<img src=test onerror=alert>
+```
+
+### If it is in HTML attribute
+
+We escape using quotes `"`:
+
+```html
+"onmouseover=alert(1)"
+```
+
+### If it is in script tag or a JavaScript string literal
+
+We use string literal closure:
+
+```javascript
+';alert(1);//
+```
+
+### If it is in URL
+
+We use `javascript:` or `data:` protocol injection:
+
+```javascript
+javascript:alert(1)
+```
+
+Other examples / variants:
+
+```text
+data:[MIME type][;charset][;base64],<data>
+data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg== (base64 encoded)
+data:text/html,<script>alert(1)</script>
+```
+
+### If it is in the Template expression (Angular/Vue)
+
+We use template expression syntax:
+
+```javascript
+{{constructor.constructor('alert(1)')()}}
+```
+
+---
+
+## Additional Checks & Variations
+
+* We also check for Content Security Policy (unsafe-inline, unsafe-eval or overly permissive domains).
+
+* Also test your payload via URL encoding, HTML encoding and double encoding variants as well.
+
+<div style={styles.flow}>
+      <strong>Mistakes You might make:</strong>
+      <div style={{ marginTop: '0.4rem' }}>
+            Copy pasting a generic payload <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> everywhere as it only works for raw HTML body, it will fail everywhere else and you will never find out why so.
+      </div>
+</div>

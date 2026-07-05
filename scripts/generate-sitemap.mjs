@@ -171,6 +171,7 @@ async function main() {
   const staticRoutes = [
     { path: '/', lastmod: today, changefreq: 'weekly', priority: '1.0' },
     { path: '/blog', lastmod: today, changefreq: 'daily', priority: '0.9' },
+    { path: '/terminal', lastmod: today, changefreq: 'monthly', priority: '0.7' },
     { path: '/resume', lastmod: today, changefreq: 'monthly', priority: '0.6' },
   ]
   const blogEntries = await collectBlogEntries()

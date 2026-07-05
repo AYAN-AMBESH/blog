@@ -5,6 +5,7 @@ import { BlogPostPage } from './pages/BlogPostPage.jsx'
 import { HomePage } from './pages/HomePage.jsx'
 import { NotFoundPage } from './pages/NotFoundPage.jsx'
 import { ResumePage } from './pages/ResumePage.jsx'
+import { TerminalPage } from './pages/TerminalPage.jsx'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/resume" element={<ResumePage />} />
         <Route path="/blog" element={<BlogIndexPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
+        <Route path="/terminal" element={<TerminalPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Layout>

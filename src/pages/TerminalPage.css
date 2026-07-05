@@ -1,0 +1,308 @@
+@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
+
+.terminal-page {
+  animation: rise 400ms ease;
+  margin-top: 1rem;
+}
+
+.terminal-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.terminal-toolbar h1 {
+  margin: 0;
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: clamp(1.7rem, 5vw, 2.5rem);
+}
+
+.terminal-hint {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+/* Terminal Console Outer Container */
+.terminal-console {
+  border: 2px solid var(--line);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 1px 0 #fff inset;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Header styled with macOS style dots */
+.terminal-console-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--line);
+  user-select: none;
+}
+
+.terminal-window-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.terminal-dot.red { background-color: #ff5f56; }
+.terminal-dot.yellow { background-color: #ffbd2e; }
+.terminal-dot.green { background-color: #27c93f; }
+
+.terminal-window-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.terminal-theme-indicator {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* Scrollable CLI body */
+.terminal-console-body {
+  height: 520px;
+  overflow-y: auto;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  position: relative;
+  scroll-behavior: smooth;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Scanlines retro effect overlay */
+.terminal-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg, 
+    rgba(255, 0, 0, 0.06), 
+    rgba(0, 255, 0, 0.02), 
+    rgba(0, 0, 255, 0.06)
+  );
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  z-index: 10;
+  display: none; /* Only show in retro theme */
+}
+
+/* Output lines styles */
+.terminal-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.terminal-line-command {
+  font-weight: 600;
+}
+
+.terminal-line-error {
+  color: #e74c3c;
+}
+
+.terminal-line-success {
+  color: #27ae60;
+}
+
+.terminal-line-link {
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Prompt and input field style */
+.terminal-prompt-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 11;
+}
+
+.terminal-prompt-symbol {
+  font-weight: bold;
+}
+
+.terminal-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+}
+
+/* Themes Definition */
+
+/* Cozy Theme (Default - Matches blog, but dark console card) */
+.theme-dark .terminal-console {
+  background-color: #1a1e1b;
+  border-color: #404a43;
+}
+.theme-dark .terminal-console-header {
+  background-color: #121513;
+  border-bottom-color: #404a43;
+  color: #a3b899;
+}
+.theme-dark .terminal-console-body {
+  color: #e3ebd9;
+  font-family: 'IBM Plex Mono', Consolas, monospace;
+}
+.theme-dark .terminal-prompt-symbol {
+  color: #72cf97;
+}
+.theme-dark .terminal-line-command {
+  color: #dfebcd;
+}
+.theme-dark .terminal-line-link {
+  color: #72cf97;
+}
+.theme-dark .terminal-theme-indicator {
+  background-color: #222b24;
+  color: #72cf97;
+  border: 1px solid #404a43;
+}
+
+/* Light Theme (Full Cozy light match) */
+.theme-light .terminal-console {
+  background-color: var(--card);
+  border-color: var(--line);
+}
+.theme-light .terminal-console-header {
+  background: linear-gradient(90deg, #fdf8ee, #f0e4cf);
+  border-bottom-color: var(--line);
+  color: var(--ink);
+}
+.theme-light .terminal-console-body {
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', Consolas, monospace;
+}
+.theme-light .terminal-prompt-symbol {
+  color: var(--accent);
+}
+.theme-light .terminal-line-command {
+  color: var(--ink);
+}
+.theme-light .terminal-line-link {
+  color: var(--accent);
+}
+.theme-light .terminal-theme-indicator {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+
+/* Classic Cyberpunk CRT theme (Retro green on black) */
+.theme-classic .terminal-console {
+  background-color: #000000;
+  border-color: #33ff33;
+  box-shadow: 0 0 15px rgba(51, 255, 51, 0.3);
+}
+.theme-classic .terminal-console-header {
+  background-color: #0d0d0d;
+  border-bottom-color: #33ff33;
+  color: #33ff33;
+}
+.theme-classic .terminal-console-body {
+  color: #33ff33;
+  font-family: 'VT323', monospace;
+  font-size: 1.15rem;
+  text-shadow: 0 0 2px rgba(51, 255, 51, 0.7);
+}
+.theme-classic .terminal-scanlines {
+  display: block;
+}
+.theme-classic .terminal-prompt-symbol {
+  color: #33ff33;
+}
+.theme-classic .terminal-line-command {
+  color: #33ff33;
+}
+.theme-classic .terminal-line-link {
+  color: #ffffff;
+  text-decoration: underline;
+}
+.theme-classic .terminal-theme-indicator {
+  background-color: #000;
+  color: #33ff33;
+  border: 1px solid #33ff33;
+}
+.theme-classic .terminal-input {
+  caret-color: #33ff33;
+}
+
+/* Neofetch Styling */
+.terminal-banner-art {
+  display: block;
+  font-weight: bold;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.terminal-banner-info-key {
+  font-weight: bold;
+}
+
+.terminal-banner-info-val {
+  font-weight: normal;
+}
+
+/* Theme variations for Neofetch */
+.theme-dark .terminal-banner-art {
+  color: #72cf97; /* Emerald Green */
+  text-shadow: 0 0 4px rgba(114, 207, 151, 0.2);
+}
+.theme-dark .terminal-banner-info-key {
+  color: #a3b899;
+}
+.theme-dark .terminal-banner-info-val {
+  color: #e3ebd9;
+}
+
+.theme-light .terminal-banner-art {
+  color: var(--accent); /* Dark Teal */
+}
+.theme-light .terminal-banner-info-key {
+  color: var(--ink-soft);
+}
+.theme-light .terminal-banner-info-val {
+  color: var(--ink);
+}
+
+.theme-classic .terminal-banner-art {
+  color: #33ff33; /* Neon Green */
+  text-shadow: 0 0 5px rgba(51, 255, 51, 0.8);
+}
+.theme-classic .terminal-banner-info-key {
+  color: #33ff33;
+}
+.theme-classic .terminal-banner-info-val {
+  color: #ffffff;
+}

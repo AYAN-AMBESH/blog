@@ -44,6 +44,7 @@ export function Layout({ children }) {
               home
             </NavLink>
             <NavLink to="/blog">blog</NavLink>
+            <NavLink to="/terminal">terminal</NavLink>
           </nav>
         </header>
         <main className="content">{children}</main>
