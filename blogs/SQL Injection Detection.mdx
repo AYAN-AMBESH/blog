@@ -1,0 +1,150 @@
+export const meta = {
+      title: 'SQL Injection Detection',
+      date: '2026-07-11',
+      tags: ['web-security', 'pentesting', 'sqli'],
+      excerpt:
+            'A practical first-pass methodology to detect SQL injection through behavior changes, boolean logic checks, time delays, and database fingerprinting.',
+      slug: 'sql-injection-detection',
+      searchText:
+            'sql injection detection boolean based blind timing sleep pg_sleep waitfor delay mysql postgresql mssql oracle sqlite query hypothesis error based',
+}
+
+export const styles = {
+      lead: {
+            border: '1px solid #cbbfa7',
+            background: 'linear-gradient(135deg, #fffaf0, #f6ecdb)',
+            padding: '0.95rem 1rem',
+            borderRadius: '12px',
+            margin: '1rem 0',
+      },
+      grid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '0.65rem',
+            margin: '0.8rem 0',
+      },
+      card: {
+            border: '1px solid #d7c9ad',
+            background: '#fffaf2',
+            borderRadius: '10px',
+            padding: '0.7rem 0.8rem',
+      },
+      flow: {
+            border: '1px dashed #bdaa86',
+            background: '#fff7e8',
+            borderRadius: '10px',
+            padding: '0.85rem',
+            margin: '0.9rem 0',
+            fontFamily:
+                  'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+            whiteSpace: 'pre-wrap',
+      },
+}
+
+export function MiniCard({ title, children }) {
+      return (
+            <div style={styles.card}>
+                  <strong>{title}</strong>
+                  <div style={{ marginTop: '0.25rem' }}>{children}</div>
+            </div>
+      )
+}
+
+SQL Injection detection starts with one goal: infer the backend query logic from how the application behaves.
+
+<div style={styles.lead}>
+      <strong>First Step:</strong> Build a hypothesis for the SQL query based on
+      input locations, response differences, and error patterns.
+</div>
+
+<div style={styles.grid}>
+      <MiniCard title="Error-Based Probe">
+            Add a single quote to one input at a time and observe whether SQL
+            errors appear.
+      </MiniCard>
+      <MiniCard title="Boolean Probe">
+            Compare behavior for logically true vs false conditions.
+      </MiniCard>
+      <MiniCard title="Timing Probe">
+            If true/false look identical, move to time-delay payloads.
+      </MiniCard>
+      <MiniCard title="DB Fingerprinting">
+            Use error messages and function behavior to infer DB type.
+      </MiniCard>
+</div>
+
+## Baseline and Error Checks
+
+Test each user-controllable parameter one by one.
+
+Start with a quote-break test:
+
+```text
+'
+```
+
+If behavior changes, errors appear, or response rendering breaks, you may have
+an injectable context.
+
+Look for DB-related messages in HTTP responses, logs, or debug traces.
+
+---
+
+## Boolean-Based Test
+
+Run controlled comparisons in the same parameter:
+
+```text
+1=1
+1=2
+```
+
+If the application response differs between true and false conditions without
+throwing visible SQL errors, this can indicate Boolean-based Blind SQLi.
+
+---
+
+## Timing-Based Follow-up
+
+If true/false responses look the same, test with time delays:
+
+```text
+SLEEP(5)
+pg_sleep(5)
+WAITFOR DELAY '0:0:5'
+```
+
+A consistent delay pattern suggests Blind SQL Injection.
+
+---
+
+## Identify Database Type
+
+Use error formats and supported syntax/functions to fingerprint the DB engine.
+
+<div style={styles.grid}>
+      <MiniCard title="MySQL">
+            Common clues: error 1064, CONCAT, SLEEP.
+      </MiniCard>
+      <MiniCard title="PostgreSQL">
+            Common clues: syntax error wording, || operator, pg_sleep.
+      </MiniCard>
+      <MiniCard title="MSSQL">
+            Common clues: OLE DB errors, + concatenation, WAITFOR DELAY.
+      </MiniCard>
+      <MiniCard title="Oracle">
+            Common clues: ORA- errors, || operator, dbms_pipe.
+      </MiniCard>
+      <MiniCard title="SQLite">
+            Common clues: near "x": syntax error, randomblob().
+      </MiniCard>
+</div>
+
+<div style={styles.flow}>
+      <strong>Common trap:</strong>
+      <div style={{ marginTop: '0.4rem' }}>
+            Assuming MySQL syntax always works. Copy-pasted payloads can fail
+            silently on PostgreSQL or MSSQL because functions, operators, and
+            comment styles differ.
+      </div>
+</div>
