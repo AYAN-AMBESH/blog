@@ -3,6 +3,7 @@ import path from 'node:path'
 
 const rootDir = process.cwd()
 const blogsDir = path.join(rootDir, 'blogs')
+const docsDir = path.join(rootDir, 'docs')
 const publicDir = path.join(rootDir, 'public')
 const siteUrl = (process.env.SITE_URL || 'https://whokilledtulpa.com').replace(/\/$/, '')
 const today = new Date().toISOString().slice(0, 10)
@@ -135,6 +136,39 @@ async function collectBlogEntries() {
   return entries.sort((a, b) => b.date.localeCompare(a.date))
 }
 
+async function collectDocEntries() {
+  let files = []
+
+  try {
+    files = await fs.readdir(docsDir)
+  } catch {
+    return []
+  }
+
+  const entries = []
+
+  for (const file of files.filter((name) => /\.md$/i.test(name))) {
+    const raw = await fs.readFile(path.join(docsDir, file), 'utf8')
+    const { data } = parseFrontmatter(raw)
+
+    entries.push({
+      slug: data.slug || toSlug(file),
+      lastmod: normalizeDate(data.updated || today),
+    })
+  }
+
+  return entries.sort((a, b) => a.slug.localeCompare(b.slug))
+}
+
+function getDocRouteEntries(entries) {
+  return entries.map((entry) => ({
+    path: `/docs/${entry.slug}`,
+    lastmod: entry.lastmod,
+    changefreq: 'monthly',
+    priority: '0.7',
+  }))
+}
+
 function getBlogRouteEntries(entries) {
   return entries
     .map((entry) => ({
@@ -172,11 +206,13 @@ async function main() {
     { path: '/', lastmod: today, changefreq: 'weekly', priority: '1.0' },
     { path: '/blog', lastmod: today, changefreq: 'daily', priority: '0.9' },
     { path: '/terminal', lastmod: today, changefreq: 'monthly', priority: '0.7' },
+    { path: '/docs', lastmod: today, changefreq: 'weekly', priority: '0.8' },
     { path: '/resume', lastmod: today, changefreq: 'monthly', priority: '0.6' },
   ]
   const blogEntries = await collectBlogEntries()
   const blogRoutes = getBlogRouteEntries(blogEntries)
-  const allRoutes = [...staticRoutes, ...blogRoutes]
+  const docRoutes = getDocRouteEntries(await collectDocEntries())
+  const allRoutes = [...staticRoutes, ...blogRoutes, ...docRoutes]
 
   await fs.mkdir(publicDir, { recursive: true })
   await fs.writeFile(path.join(publicDir, 'sitemap.xml'), createSitemapXml(allRoutes), 'utf8')
@@ -185,7 +221,9 @@ async function main() {
   const robots = `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\nSitemap: ${siteUrl}/rss.xml\n`
   await fs.writeFile(path.join(publicDir, 'robots.txt'), robots, 'utf8')
 
-  console.log(`Generated sitemap with ${allRoutes.length} routes and RSS with ${blogEntries.length} posts.`)
+  console.log(
+    `Generated sitemap with ${allRoutes.length} routes (${docRoutes.length} docs) and RSS with ${blogEntries.length} posts.`,
+  )
 }
 
 main().catch((error) => {

@@ -6,11 +6,18 @@
   <description>Security, OSINT, and digital forensics notes by Ayan Ambesh.</description>
   <language>en-us</language>
   <item>
+    <title>SQL Injection Detection</title>
+    <link>https://whokilledtulpa.com/blog/sql-injection-detection</link>
+    <guid>https://whokilledtulpa.com/blog/sql-injection-detection</guid>
+    <pubDate>Sat, 11 Jul 2026 00:00:00 GMT</pubDate>
+    <description>A practical first-pass methodology to detect SQL injection through behavior changes, boolean logic checks, time delays, and database fingerprinting.</description>
+  </item>
+  <item>
     <title>Cross Site Scripting (XSS)</title>
     <link>https://whokilledtulpa.com/blog/xss</link>
     <guid>https://whokilledtulpa.com/blog/xss</guid>
     <pubDate>Sun, 05 Jul 2026 00:00:00 GMT</pubDate>
-    <description>Since I have written the blogs on how to learn Web pentesting, this time im gonna write a series of blogs covering every web vulnerability starting with XSS.</description>
+    <description>Since I have already written blogs on learning web pentesting, this time I am writing a series covering major web vulnerabilities, starting with XSS.</description>
   </item>
   <item>
     <title>How you can truly learn pentesting</title>
